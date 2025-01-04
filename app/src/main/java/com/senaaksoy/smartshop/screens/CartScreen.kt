@@ -49,7 +49,7 @@ fun CartScreen(
 ) {
     val selectedProduct = products.find { it.id == productId }
     selectedProduct?.let {
-        viewModel.addToCart(CartEntity(id = it.id, name = it.name, quantity = 1, price = it.price))
+        viewModel.addToCart(CartEntity(id = it.id, name = it.name, quantity = 0, price = it.price))
     }
     val cartItems by viewModel.cartItems.observeAsState(initial = emptyList())
     val totalPrice by viewModel.totalPrice.observeAsState(0.0)
@@ -77,7 +77,7 @@ fun CartScreen(
                         onIncrease = {
                             viewModel.updateQuantity(
                                 cartItem.id,
-                                cartItem.quantity + 1
+                                cartItem.quantity +1
                             )
                         },
                         onDecrease = {viewModel.updateQuantity(

@@ -21,14 +21,24 @@ class CartViewModel @Inject constructor(
     }
     fun addToCart(cartEntity: CartEntity) {
         viewModelScope.launch {
+
             val existingCartItem = cartItems.value?.find { it.id == cartEntity.id }
+
             if (existingCartItem != null) {
-                updateQuantity(existingCartItem.id, existingCartItem.quantity + 1)
+
+
+                cartRepository.updateQuantity(existingCartItem.id, existingCartItem.quantity)
             } else {
-                cartRepository.addToCart(cartEntity)
+
+                cartRepository.addToCart(cartEntity.copy(quantity = 1))
             }
         }
     }
+
+
+
+
+
 
     fun updateQuantity(id: Int, newQuantity: Int) {
         viewModelScope.launch {
