@@ -30,6 +30,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.senaaksoy.smartshop.R
 import com.senaaksoy.smartshop.components.CustomBottomBar
 import com.senaaksoy.smartshop.components.CustomTopBar
@@ -40,11 +41,11 @@ import com.senaaksoy.smartshop.viewModel.CartViewModel
 @Composable
 fun CartScreen(
     modifier: Modifier = Modifier,
-    onNavItemClick: (String) -> Unit = {},
     viewModel: CartViewModel = hiltViewModel(),
     productId: Int?,
     onBackPressed: () -> Unit,
-    products: List<ProductEntity>
+    products: List<ProductEntity>,
+    navController: NavController
 ) {
     val selectedProduct = products.find { it.id == productId }
     selectedProduct?.let {
@@ -60,7 +61,7 @@ fun CartScreen(
                 onBackPressed = {onBackPressed()}
                 )
         },
-        bottomBar = { CustomBottomBar(onNavItemClick = onNavItemClick) }
+        bottomBar = { CustomBottomBar(navController = navController) }
     ) { innerPadding ->
         Column(
             modifier = modifier

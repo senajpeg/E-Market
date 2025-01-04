@@ -1,12 +1,19 @@
 package com.senaaksoy.smartshop.components
 
+import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.navigation.NavController
 import com.senaaksoy.smartshop.R
 import com.senaaksoy.smartshop.navigation.Screen
 
@@ -31,24 +38,33 @@ val navItem = listOf(
     ),
     NavItem(
         icon = R.drawable.user,
-        screen = Screen.HOMESCREEN.route
+        screen = Screen.PROFILESCREEN.route
     )
 
 )
 
+
 @Composable
-fun CustomBottomBar(onNavItemClick :(String)->Unit={}) {
+fun CustomBottomBar(navController : NavController) {
+    var currentScreen by remember {mutableStateOf("${Screen.HOMESCREEN.route}/0") }
     NavigationBar(containerColor = Color.White) {
         navItem.forEach { item ->
             NavigationBarItem(
-                selected = false,
-                onClick = { onNavItemClick(item.screen)},
+                selected = currentScreen == item.screen,
+                onClick = {
+                        navController.navigate("${item.screen}/0")
+                        currentScreen=item.screen
+
+                },
                 icon = {
                     Icon(
                         painter = painterResource(id = item.icon),
                         contentDescription = null,
                     )
                 },
+                colors = NavigationBarItemDefaults.colors(
+                    indicatorColor = Color.LightGray
+                )
             )
         }
     }

@@ -60,7 +60,6 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
     homeviewModel: HomeViewModel = hiltViewModel(),
-    onNavItemClick: (String) -> Unit = {},
     products : List<ProductEntity>
 
 ) {
@@ -78,7 +77,7 @@ fun HomeScreen(
             CustomTopBar(title = stringResource(id = R.string.e_market))
         },
         bottomBar = {
-            CustomBottomBar(onNavItemClick = onNavItemClick)
+            CustomBottomBar(navController = navController)
         }
     ) { innerPadding ->
         Column(
@@ -136,77 +135,75 @@ fun ProductCard(modifier: Modifier = Modifier,
                 imageUrl:String,
                 price:Double,
                 homeViewModel: HomeViewModel) {
-        Surface(
+    Surface(
+        modifier = modifier
+            .shadow(elevation = 2.dp)
+            .background(color = Color.White)
+            .clickable {
+                navController.navigate("${Screen.DETAILSCREEN.route}/${productid}")
+            },
+        shape = RectangleShape,
+        border = BorderStroke(width = 1.dp, color = Color.LightGray)
+
+    ) {
+        Column(
             modifier = modifier
-                .shadow(elevation = 2.dp)
-                .background(color = Color.White)
-                .clickable {
-                    navController.navigate("${Screen.DETAILSCREEN.route}/${productid}")
-                },
-            shape = RectangleShape,
-            border = BorderStroke(width = 1.dp, color = Color.LightGray)
-
+                .fillMaxSize()
+                .padding(12.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Column(
-                modifier = modifier
-                    .fillMaxSize()
-                    .padding(12.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
 
-                Box {
-                    AsyncImage(
-                        model = imageUrl,
-                        contentDescription = null,
-                        modifier = modifier
-                            .fillMaxWidth()
-                    )
-                    Icon(
-                        imageVector = Icons.Filled.Star,
-                        contentDescription = null,
-                        tint = if (product.isFavorite) Color.Yellow else Color(0xFFF1F1F1),
-                        modifier = modifier
-                            .padding(4.dp)
-                            .clickable {homeViewModel.toggleFavorite(productid, !product.isFavorite)}
-                            .height(24.dp)
-                            .align(alignment = Alignment.TopEnd)
-                    )
-                }
-
-
-
-                Text(
-                    text = product.name,
-                    fontSize = 16.sp,
-                    color = Color(0xFF2054fc),
-                    textAlign = TextAlign.Start,
-                    maxLines = 1,
-                    modifier = modifier.fillMaxWidth()
+            Box {
+                AsyncImage(
+                    model = imageUrl,
+                    contentDescription = null,
+                    modifier = modifier
+                        .fillMaxWidth()
                 )
-                Text(
-                    text = "${product.price} Tl",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center
+                Icon(
+                    imageVector = Icons.Filled.Star,
+                    contentDescription = null,
+                    tint = if (product.isFavorite) Color.Yellow else Color(0xFFF1F1F1),
+                    modifier = modifier
+                        .padding(4.dp)
+                        .clickable {homeViewModel.toggleFavorite(productid, !product.isFavorite)}
+                        .height(24.dp)
+                        .align(alignment = Alignment.TopEnd)
                 )
-
-                Button(
-                    modifier = modifier.fillMaxWidth(),
-                    onClick = { navController.navigate("${Screen.CARTSCREEN.route}/${productid}") },
-                    shape = RoundedCornerShape(6.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2054fc))
-
-                ) {
-                    Text(text = stringResource(id = R.string.add_to_cart))
-                }
             }
 
 
+
+            Text(
+                text = product.name,
+                fontSize = 16.sp,
+                color = Color(0xFF2054fc),
+                textAlign = TextAlign.Start,
+                maxLines = 1,
+                modifier = modifier.fillMaxWidth()
+            )
+            Text(
+                text = "${product.price} Tl",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center
+            )
+
+            Button(
+                modifier = modifier.fillMaxWidth(),
+                onClick = { navController.navigate("${Screen.CARTSCREEN.route}/${productid}") },
+                shape = RoundedCornerShape(6.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2054fc))
+
+            ) {
+                Text(text = stringResource(id = R.string.add_to_cart))
+            }
         }
+
+
+    }
 
 
 
 }
-
-

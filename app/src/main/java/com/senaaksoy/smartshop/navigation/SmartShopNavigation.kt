@@ -22,15 +22,11 @@ fun SmartShopNavigation() {
     val products by viewModel.products.observeAsState(initial = emptyList())
 
 
-    NavHost(navController = navController, startDestination = Screen.HOMESCREEN.route) {
-        composable(Screen.HOMESCREEN.route) {
+    NavHost(navController = navController, startDestination = "${Screen.HOMESCREEN.route}/{productid}") {
+        composable("${Screen.HOMESCREEN.route}/{productid}") {
             HomeScreen(
-                onNavItemClick = { route ->
-                    navController.navigate(route)
-                },
                 navController = navController,
                 products = products
-
             )
         }
         composable(
@@ -53,11 +49,15 @@ fun SmartShopNavigation() {
             CartScreen(
                 productId = productId,
                 products = products,
-                onNavItemClick = { route ->
-                    navController.navigate(route)
-                },
+              navController = navController,
                 onBackPressed = {navController.popBackStack()}
             )
+        }
+        composable("${Screen.FAVOURITESSCREEN.route}/{productId}") {
+            // Favoriler ekranı
+        }
+        composable("${Screen.PROFILESCREEN.route}/{productId}") {
+            // Profil ekranı
         }
 
 
