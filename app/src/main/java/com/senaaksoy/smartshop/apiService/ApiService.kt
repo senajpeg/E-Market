@@ -22,4 +22,5 @@ data class ProductDto(
         price=price.toDouble(),
         description=description,
         imageUrl=image)
+
 }

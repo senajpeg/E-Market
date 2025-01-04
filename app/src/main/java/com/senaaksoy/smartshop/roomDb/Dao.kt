@@ -15,9 +15,9 @@ interface ProductDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(products : List<ProductEntity>)
+    @Query("UPDATE products SET isFavorite = :isFavorite WHERE id = :productId")
+    suspend fun updateFavorite(productId: Int, isFavorite: Boolean)
 
-    @Query("SELECT * FROM products WHERE id = :productId")
-    fun getProductById(productId: Int): ProductEntity?
 
 }
 @Dao

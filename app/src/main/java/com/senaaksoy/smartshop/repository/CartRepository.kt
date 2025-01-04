@@ -18,4 +18,7 @@ class CartRepository @Inject constructor(
     suspend fun updateQuantity(id: Int, quantity: Int) {
         cartDao.updateQuantity(id, quantity)
     }
+    suspend fun removeFromCart(id: Int) {
+        cartDao.deleteById(id)
+    }
 }

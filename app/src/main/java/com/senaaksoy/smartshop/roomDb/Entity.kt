@@ -10,7 +10,8 @@ data class ProductEntity (
     val name : String,
     val price : Double,
     val description : String,
-    val imageUrl : String
+    val imageUrl : String,
+    val isFavorite: Boolean=false
 )
 
 @Entity(tableName = "cart")
@@ -18,5 +19,5 @@ data class CartEntity (
     @PrimaryKey val id : Int,
     val name : String,
     val price : Double,
-    val quantity : String
+    val quantity : Int
 )

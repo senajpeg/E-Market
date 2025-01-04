@@ -1,6 +1,8 @@
 package com.senaaksoy.smartshop.viewModel
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.senaaksoy.smartshop.repository.CartRepository
 import com.senaaksoy.smartshop.roomDb.CartEntity
@@ -14,15 +16,29 @@ class CartViewModel @Inject constructor(
 ) : ViewModel() {
     val cartItems = cartRepository.cartItems
 
+    val totalPrice: LiveData<Double> = cartRepository.cartItems.map { cartItems ->
+        cartItems.sumOf { it.price * it.quantity }
+    }
     fun addToCart(cartEntity: CartEntity) {
         viewModelScope.launch {
-            cartRepository.addToCart(cartEntity)
+            val existingCartItem = cartItems.value?.find { it.id == cartEntity.id }
+            if (existingCartItem != null) {
+                updateQuantity(existingCartItem.id, existingCartItem.quantity + 1)
+            } else {
+                cartRepository.addToCart(cartEntity)
+            }
         }
     }
 
-    fun updateQuantity(id: Int, quantity: Int) {
+    fun updateQuantity(id: Int, newQuantity: Int) {
         viewModelScope.launch {
-            cartRepository.updateQuantity(id, quantity)
+            if (newQuantity <= 0) {
+               cartRepository.removeFromCart(id)
+            } else {
+                cartRepository.updateQuantity(id, newQuantity)
+            }
         }
     }
+
+
 }

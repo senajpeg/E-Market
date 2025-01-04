@@ -18,6 +18,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,20 +27,38 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.senaaksoy.smartshop.R
 import com.senaaksoy.smartshop.components.CustomBottomBar
 import com.senaaksoy.smartshop.components.CustomTopBar
+import com.senaaksoy.smartshop.roomDb.CartEntity
+import com.senaaksoy.smartshop.roomDb.ProductEntity
+import com.senaaksoy.smartshop.viewModel.CartViewModel
 
 @Composable
-fun CartScreen(modifier: Modifier = Modifier,
-               onNavItemClick:(String)->Unit={}) {
-    val phoneList = listOf("Xiaomi Redmi Note 12", "Samsung Galaxy A54 5G", "Apple iPhone 15 Pro")
+fun CartScreen(
+    modifier: Modifier = Modifier,
+    onNavItemClick: (String) -> Unit = {},
+    viewModel: CartViewModel = hiltViewModel(),
+    productId: Int?,
+    onBackPressed: () -> Unit,
+    products: List<ProductEntity>
+) {
+    val selectedProduct = products.find { it.id == productId }
+    selectedProduct?.let {
+        viewModel.addToCart(CartEntity(id = it.id, name = it.name, quantity = 1, price = it.price))
+    }
+    val cartItems by viewModel.cartItems.observeAsState(initial = emptyList())
+    val totalPrice by viewModel.totalPrice.observeAsState(0.0)
+
     Scaffold(
         topBar = {
-            CustomTopBar(title = stringResource(id = R.string.e_market))
+            CustomTopBar(title = stringResource(id = R.string.e_market),
+                showBackIcon = true,
+                onBackPressed = {onBackPressed()}
+                )
         },
         bottomBar = { CustomBottomBar(onNavItemClick = onNavItemClick) }
     ) { innerPadding ->
@@ -49,8 +69,23 @@ fun CartScreen(modifier: Modifier = Modifier,
         ) {
 
             LazyColumn {
-                items(phoneList) { phone ->
-                    PhoneItem(phone = phone)
+                items(cartItems) { cartItem ->
+                    CartItem(
+                        productName = cartItem.name,
+                        quantity = cartItem.quantity,
+                        onIncrease = {
+                            viewModel.updateQuantity(
+                                cartItem.id,
+                                cartItem.quantity + 1
+                            )
+                        },
+                        onDecrease = {viewModel.updateQuantity(
+                            cartItem.id,
+                            cartItem.quantity - 1
+                        )
+                        }
+                    )
+
 
                 }
             }
@@ -72,7 +107,7 @@ fun CartScreen(modifier: Modifier = Modifier,
                         color = Color(0xFF2054fc)
                     )
                     Text(
-                        text = "12132 tl",
+                        text = "$${"%.2f".format(totalPrice)}",
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -99,33 +134,35 @@ fun CartScreen(modifier: Modifier = Modifier,
 }
 
 @Composable
-fun PhoneItem(phone: String) {
+fun CartItem(productName: String, quantity: Int, onIncrease: () -> Unit,onDecrease: ()->Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
     ) {
         Text(
-            text = phone,
-            fontSize = 16.sp
+            text = productName,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.weight(1f))
         IconButton(
             modifier = Modifier.background(Color(0x0F535252)),
-            onClick = { }) {
+            onClick = {onDecrease() }) {
             Icon(painter = painterResource(id = R.drawable.delete), contentDescription = null)
         }
         Text(
-            text = "1",
+            text = "$quantity",
             color = Color.White,
             fontSize = 22.sp,
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .background(Color(0xFF2054fc))
-                .size(48.dp))
+                .size(48.dp)
+        )
         IconButton(
             modifier = Modifier.background(Color(0x0F535252)),
-            onClick = { }) {
+            onClick = { onIncrease() }) {
             Icon(painter = painterResource(id = R.drawable.plus), contentDescription = null)
         }
 
@@ -133,8 +170,4 @@ fun PhoneItem(phone: String) {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun Yilmaz() {
-    CartScreen()
-}
+
