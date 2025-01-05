@@ -18,6 +18,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -47,12 +48,20 @@ fun CartScreen(
     products: List<ProductEntity>,
     navController: NavController
 ) {
-    val selectedProduct = products.find { it.id == productId }
-    selectedProduct?.let {
-        viewModel.addToCart(CartEntity(id = it.id, name = it.name, quantity = 0, price = it.price))
-    }
+
     val cartItems by viewModel.cartItems.observeAsState(initial = emptyList())
     val totalPrice by viewModel.totalPrice.observeAsState(0.0)
+
+    LaunchedEffect(productId) {
+        productId?.let { id ->
+            val selectedProduct = products.find { it.id == id }
+            selectedProduct?.let {
+                if (cartItems.none { it.id == it.id }) {
+                    viewModel.addToCart(CartEntity(id = it.id, name = it.name, quantity = 1, price = it.price))
+                }
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
