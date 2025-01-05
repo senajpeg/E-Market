@@ -7,21 +7,28 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -59,17 +66,28 @@ import com.senaaksoy.smartshop.roomDb.ProductEntity
 fun HomeScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
-    homeviewModel: HomeViewModel = hiltViewModel(),
-    products : List<ProductEntity>
-
+    homeViewModel: HomeViewModel = hiltViewModel(),
+    products: List<ProductEntity>
 ) {
     var searchQuery by remember { mutableStateOf("") }
+    var selectedPriceSort by remember { mutableStateOf<PriceSort?>(null) }
+    var selectedBrand by remember { mutableStateOf<String?>(null) }
+    var showBottomSheet by remember { mutableStateOf(false) }
 
-    val filteredList= products.filter { product->
-        product.name.contains(searchQuery,ignoreCase = true)
+    // Ürün listesi filtreleme
+    val filteredList = products.filter { product ->
+        product.name.contains(searchQuery, ignoreCase = true) &&
+                (selectedBrand == null || product.name.contains(selectedBrand!!, ignoreCase = true))
+    }.sortedWith { p1, p2 ->
+        when (selectedPriceSort) {
+            PriceSort.PriceLowToHigh -> p1.price.compareTo(p2.price)
+            PriceSort.PriceHighToLow -> p2.price.compareTo(p1.price)
+            else -> 0
+        }
     }
+
     LaunchedEffect(Unit) {
-        homeviewModel.refreshProducts()
+        homeViewModel.refreshProducts()
     }
 
     Scaffold(
@@ -85,25 +103,42 @@ fun HomeScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            TextField(
-                value = searchQuery,
-                onValueChange = {searchQuery=it},
-                label = { Text(text = stringResource(id = R.string.search)) },
-                modifier = modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                shape = RoundedCornerShape(12.dp),
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Filled.Search,
-                        contentDescription = null
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                TextField(
+                    value = searchQuery,
+                    onValueChange = { searchQuery = it },
+                    label = { Text(text = stringResource(id = R.string.search)) },
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .padding(16.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Filled.Search,
+                            contentDescription = null
+                        )
+                    },
+                    colors = TextFieldDefaults.textFieldColors(
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent
                     )
-                },
-                colors = TextFieldDefaults.textFieldColors(
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent
                 )
-            )
+                Button(
+                    onClick = { showBottomSheet = true },
+                    modifier = Modifier
+                        .weight(0.5f)
+                        .align(Alignment.CenterVertically)
+                        .padding(12.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray)
+                ) {
+                    Text(text = stringResource(id = R.string.filter))
+                }
+            }
 
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
@@ -118,11 +153,111 @@ fun HomeScreen(
                         price = product.price,
                         navController = navController,
                         productid = product.id,
-                        homeViewModel = homeviewModel
+                        homeViewModel = homeViewModel
                     )
                 }
             }
         }
+    }
+
+    if (showBottomSheet) {
+        BottomSheetFilter(
+            onApplyFilters = { priceSort, brand ->
+                selectedPriceSort = priceSort
+                selectedBrand = brand
+                showBottomSheet = false
+            },
+            products = products ,// Burada markaları anasayfada görünen ürünlerden alıyoruz
+            onCancel = {showBottomSheet=false}
+        )
+    }
+}
+
+
+
+
+@Composable
+fun BottomSheetFilter(
+    onApplyFilters: (PriceSort?, String?) -> Unit,
+    products: List<ProductEntity>,
+    onCancel: () -> Unit//
+) {
+    var selectedPriceSort by remember { mutableStateOf<PriceSort?>(null) }
+    var selectedBrand by remember { mutableStateOf<String?>(null) }
+
+    // Ürünlerden markaları al
+    val brands = products.map { it.name }.distinct() // Burada markaları ürün listesinden alıyoruz
+
+    Column(
+        modifier = Modifier
+            .background(Color.White)
+            .fillMaxWidth()
+            .padding(28.dp)
+            .wrapContentHeight()
+    ) {
+        Text(text = stringResource(id = R.string.short_by_price), fontWeight = FontWeight.Bold)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            RadioButton(
+                selected = selectedPriceSort == PriceSort.PriceLowToHigh,
+                onClick = { selectedPriceSort = PriceSort.PriceLowToHigh }
+            )
+            Text(text = stringResource(id = R.string.price_low_to_high))
+
+            RadioButton(
+                selected = selectedPriceSort == PriceSort.PriceHighToLow,
+                onClick = { selectedPriceSort = PriceSort.PriceHighToLow }
+            )
+            Text(text = stringResource(id = R.string.price_high_to_low))
+        }
+
+        Divider(modifier = Modifier.padding(vertical = 4.dp))
+
+        Text(text = stringResource(id = R.string.filter_by_brand), fontWeight = FontWeight.Bold)
+        LazyColumn(modifier = Modifier.weight(1f)) {
+            items(brands) { brand ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { selectedBrand = brand }
+                        .padding(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    RadioButton(
+                        selected = selectedBrand == brand,
+                        onClick = { selectedBrand = brand }
+                    )
+                    Text(text = brand)
+                }
+            }
+        }
+
+        Button(
+            onClick = {
+                onApplyFilters(selectedPriceSort, selectedBrand)
+            },
+           modifier = Modifier
+               .fillMaxWidth()
+               .padding(top=16.dp, end = 16.dp, start = 16.dp, bottom = 8.dp),
+            shape = RoundedCornerShape(6.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2054fc))
+        ) {
+            Text(text = stringResource(id = R.string.complete))
+        }
+        Button(
+            onClick = onCancel,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom=16.dp, end = 16.dp, start = 16.dp, top = 8.dp),
+            shape = RoundedCornerShape(6.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
+        ) {
+            Text(text = stringResource(id = R.string.cancel))
+        }
+
     }
 }
 
@@ -166,7 +301,7 @@ fun ProductCard(modifier: Modifier = Modifier,
                     tint = if (product.isFavorite) Color.Yellow else Color(0xFFF1F1F1),
                     modifier = modifier
                         .padding(4.dp)
-                        .clickable {homeViewModel.toggleFavorite(productid, !product.isFavorite)}
+                        .clickable { homeViewModel.toggleFavorite(productid, !product.isFavorite) }
                         .height(24.dp)
                         .align(alignment = Alignment.TopEnd)
                 )
@@ -207,3 +342,8 @@ fun ProductCard(modifier: Modifier = Modifier,
 
 
 }
+
+enum class PriceSort {
+    PriceLowToHigh, PriceHighToLow
+}
+

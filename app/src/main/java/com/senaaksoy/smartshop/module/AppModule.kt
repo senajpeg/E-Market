@@ -29,6 +29,7 @@ object AppModule {
     @Provides
     fun provideCartDao(db: AppDatabase): CartDao = db.cartDao()
 
+
     @Provides
     fun provideRetrofit(): Retrofit {
         return Retrofit.Builder()

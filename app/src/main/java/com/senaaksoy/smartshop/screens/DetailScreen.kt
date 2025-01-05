@@ -40,7 +40,6 @@ import com.senaaksoy.smartshop.roomDb.ProductEntity
 @Composable
 fun DetailScreen(
     modifier: Modifier = Modifier,
-
     onBackPressed: () -> Unit,
     productId: Int?,
     products: List<ProductEntity>,

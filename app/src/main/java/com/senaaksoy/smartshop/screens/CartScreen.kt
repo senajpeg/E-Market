@@ -59,7 +59,7 @@ fun CartScreen(
             CustomTopBar(title = stringResource(id = R.string.e_market),
                 showBackIcon = true,
                 onBackPressed = {onBackPressed()}
-                )
+            )
         },
         bottomBar = { CustomBottomBar(navController = navController) }
     ) { innerPadding ->
@@ -170,5 +170,3 @@ fun CartItem(productName: String, quantity: Int, onIncrease: () -> Unit,onDecrea
 
     }
 }
-
-

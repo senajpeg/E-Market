@@ -14,7 +14,6 @@ import com.senaaksoy.smartshop.screens.DetailScreen
 import com.senaaksoy.smartshop.screens.HomeScreen
 import com.senaaksoy.smartshop.viewModel.HomeViewModel
 
-
 @Composable
 fun SmartShopNavigation() {
     val navController = rememberNavController()
@@ -49,7 +48,7 @@ fun SmartShopNavigation() {
             CartScreen(
                 productId = productId,
                 products = products,
-              navController = navController,
+                navController = navController,
                 onBackPressed = {navController.popBackStack()}
             )
         }

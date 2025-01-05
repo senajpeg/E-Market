@@ -8,4 +8,10 @@
     <string name="price">Price:</string>
     <string name="complete">Complete</string>
     <string name="total">Total :</string>
+    <string name="filter">Filter </string>
+    <string name="short_by_price">Sort by Price </string>
+    <string name="price_low_to_high">Price Low to High  </string>
+    <string name="price_high_to_low">Price High to Low </string>
+    <string name="filter_by_brand">Filter by Brand</string>
+    <string name="cancel">Cancel</string>
 </resources>

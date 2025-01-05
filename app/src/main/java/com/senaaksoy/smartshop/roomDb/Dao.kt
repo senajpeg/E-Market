@@ -2,9 +2,11 @@ package com.senaaksoy.smartshop.roomDb
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+
 
 
 @Dao
@@ -28,12 +30,15 @@ interface CartDao {
 
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(cartItem : CartEntity)
+    suspend fun insert(cartItem: CartEntity)
 
     @Query("DELETE FROM cart WHERE id = :id")
-    suspend fun deleteById(id : Int)
+    suspend fun deleteById(id: Int)
 
     @Query("UPDATE cart SET quantity = :quantity WHERE id = :id")
     suspend fun updateQuantity(id: Int, quantity: Int)
 
 }
+
+
+
