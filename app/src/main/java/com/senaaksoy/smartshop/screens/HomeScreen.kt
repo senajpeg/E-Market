@@ -298,10 +298,11 @@ fun ProductCard(modifier: Modifier = Modifier,
                 Icon(
                     imageVector = Icons.Filled.Star,
                     contentDescription = null,
-                    tint = if (product.isFavorite) Color.Yellow else Color(0xFFF1F1F1),
+                    tint =Color(0xFFF1F1F1),
                     modifier = modifier
                         .padding(4.dp)
-                        .clickable { homeViewModel.toggleFavorite(productid, !product.isFavorite) }
+                        .clickable {
+                            navController.navigate("${Screen.FAVOURITESSCREEN.route}/${productid}") }
                         .height(24.dp)
                         .align(alignment = Alignment.TopEnd)
                 )

@@ -14,13 +14,9 @@ class ProductRepository @Inject constructor(
 
     val allProducts: LiveData<List<ProductEntity>> = productDao.getAllProducts()
 
-
     suspend fun fetchAndSaveProducts() {
         val response = apiService.getProducts()
         productDao.insertAll(response.map { it.toEntity() })
-    }
-    suspend fun updateFavorite(productId: Int, isFavorite: Boolean) {
-        productDao.updateFavorite(productId, isFavorite)
     }
 
 

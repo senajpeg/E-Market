@@ -18,6 +18,8 @@ class HomeViewModel @Inject constructor(
     private val productRepository: ProductRepository
 ) : ViewModel() {
     val products = productRepository.allProducts
+
+
     init {
         refreshProducts()
     }
@@ -26,11 +28,8 @@ class HomeViewModel @Inject constructor(
             productRepository.fetchAndSaveProducts()
         }
     }
-    fun toggleFavorite(productId: Int, isFavorite: Boolean) {
-        viewModelScope.launch {
-            productRepository.updateFavorite(productId, isFavorite)
-            refreshProducts() // Veritabanı güncellenince tüm ürünleri tekrar yükle
-        }
-    }
+
+
+
 
 }

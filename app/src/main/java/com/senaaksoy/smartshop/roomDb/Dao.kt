@@ -6,7 +6,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-
+import androidx.room.Update
 
 
 @Dao
@@ -17,8 +17,10 @@ interface ProductDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(products : List<ProductEntity>)
-    @Query("UPDATE products SET isFavorite = :isFavorite WHERE id = :productId")
-    suspend fun updateFavorite(productId: Int, isFavorite: Boolean)
+
+
+
+
 
 
 }
@@ -39,6 +41,20 @@ interface CartDao {
     suspend fun updateQuantity(id: Int, quantity: Int)
 
 }
+
+@Dao
+interface FavoriteDao {
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun addFavorite(favorite: FavoriteEntity)
+
+    @Query("SELECT * FROM favorites")
+    fun getAllFavorites(): LiveData<List<FavoriteEntity>>
+
+    @Query("DELETE FROM favorites WHERE productId = :productId")
+    suspend fun removeFavorite(productId: Int)
+}
+
 
 
 

@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.senaaksoy.smartshop.apiService.ApiService
 import com.senaaksoy.smartshop.roomDb.AppDatabase
 import com.senaaksoy.smartshop.roomDb.CartDao
+import com.senaaksoy.smartshop.roomDb.FavoriteDao
 import com.senaaksoy.smartshop.roomDb.ProductDao
 import dagger.Module
 import dagger.Provides
@@ -29,7 +30,8 @@ object AppModule {
     @Provides
     fun provideCartDao(db: AppDatabase): CartDao = db.cartDao()
 
-
+    @Provides
+    fun provideFavoriteDao(db: AppDatabase): FavoriteDao = db.favoriteDao()
     @Provides
     fun provideRetrofit(): Retrofit {
         return Retrofit.Builder()

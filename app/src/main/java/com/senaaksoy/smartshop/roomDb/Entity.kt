@@ -11,8 +11,7 @@ data class ProductEntity (
     val name : String,
     val price : Double,
     val description : String,
-    val imageUrl : String,
-    val isFavorite: Boolean=false,
+    val imageUrl : String
 
 )
 @Entity(tableName = "cart")
@@ -21,4 +20,13 @@ data class CartEntity (
     val name : String,
     val price : Double,
     val quantity : Int
+)
+@Entity(tableName = "favorites")
+data class FavoriteEntity(
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    val productId: Int,
+    val name: String,
+    val description: String,
+    val price: Double,
+    val imageUrl: String
 )

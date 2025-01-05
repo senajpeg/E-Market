@@ -14,4 +14,6 @@
     <string name="price_high_to_low">Price High to Low </string>
     <string name="filter_by_brand">Filter by Brand</string>
     <string name="cancel">Cancel</string>
+    <string name="favorites">Favourites</string>
+    <string name="information">Henüz favori ürün eklemediniz.</string>
 </resources>
