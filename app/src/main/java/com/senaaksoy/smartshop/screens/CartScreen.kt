@@ -56,7 +56,7 @@ fun CartScreen(
         productId?.let { id ->
             val selectedProduct = products.find { it.id == id }
             selectedProduct?.let {
-                if (cartItems.none { it.id == it.id }) {
+                if (cartItems.none { it.id == selectedProduct.id }) {
                     viewModel.addToCart(CartEntity(id = it.id, name = it.name, quantity = 1, price = it.price))
                 }
             }
