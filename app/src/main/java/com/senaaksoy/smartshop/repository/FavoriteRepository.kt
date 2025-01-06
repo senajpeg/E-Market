@@ -12,7 +12,9 @@ class FavoriteRepository @Inject constructor(
 
     fun getFavoriteProducts(): LiveData<List<FavoriteEntity>> = favoriteDao.getAllFavorites()
 
-
+    suspend fun getFavoriteByProductId(productId: Int): FavoriteEntity? {
+        return favoriteDao.getFavoriteByProductId(productId)
+    }
     suspend fun addFavorite(favorite: FavoriteEntity) {
         favoriteDao.addFavorite(favorite)
     }

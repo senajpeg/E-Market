@@ -19,10 +19,6 @@ interface ProductDao {
     suspend fun insertAll(products : List<ProductEntity>)
 
 
-
-
-
-
 }
 @Dao
 interface CartDao {
@@ -50,6 +46,8 @@ interface FavoriteDao {
 
     @Query("SELECT * FROM favorites")
     fun getAllFavorites(): LiveData<List<FavoriteEntity>>
+    @Query("SELECT * FROM favorites WHERE productId = :productId LIMIT 1")
+    suspend fun getFavoriteByProductId(productId: Int): FavoriteEntity?
 
     @Query("DELETE FROM favorites WHERE productId = :productId")
     suspend fun removeFavorite(productId: Int)

@@ -20,7 +20,10 @@ class FavoriteViewModel @Inject constructor(
 
     fun addToFavorites(favorite: FavoriteEntity) {
         viewModelScope.launch {
-            favoriteRepository.addFavorite(favorite)
+            // Eğer ürün zaten favorilerde yoksa, ekle
+            if (favoriteRepository.getFavoriteByProductId(favorite.productId) == null) {
+                favoriteRepository.addFavorite(favorite)
+            }
         }
     }
 

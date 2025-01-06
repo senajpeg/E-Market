@@ -43,111 +43,111 @@ import com.senaaksoy.smartshop.viewModel.HomeViewModel
 
 @Composable
 fun FavouritesScreen(
-    modifier: Modifier=Modifier,
+    modifier: Modifier = Modifier,
     productId: Int?,
     onBackPressed: () -> Unit,
     viewModel: FavoriteViewModel = hiltViewModel(),
-    navController:NavController,
+    navController: NavController,
     products: List<ProductEntity>
 ) {
 
     val favoriteProducts by viewModel.favoriteProducts.observeAsState(emptyList())
 
-    // LaunchedEffect ile favoriye ürün ekleme işlemini yapalım
-    LaunchedEffect(productId) {
-        productId?.let { id ->
-            val selectedProduct = products.find { it.id == id }
-            selectedProduct?.let {
-                // Eğer ürün favorilerde değilse, favorilere ekliyoruz
-                if (favoriteProducts.none { it.productId == selectedProduct.id }) {
-                    val favoriteEntity = FavoriteEntity(
-                        productId = it.id,
-                        name = it.name,
-                        description = it.description,
-                        price = it.price,
-                        imageUrl = it.imageUrl
-                    )
-                    // ViewModel üzerinden favorilere ekliyoruz
-                    viewModel.addToFavorites(favoriteEntity)
-                }
-            }
+    if (productId != null) {
+        val selectedProduct = products.find { it.id == productId }
+        selectedProduct?.let {
+            // Burada, favoriye ekleme işlemi yapılır
+            viewModel.addToFavorites(
+                FavoriteEntity(
+                    productId = it.id,
+                    name = it.name,
+                    description = it.description,
+                    price = it.price,
+                    imageUrl = it.imageUrl
+                )
+            )
         }
     }
-
-
     Scaffold(
-        topBar = { CustomTopBar(
-            title = stringResource(id = R.string.favorites),
-            showBackIcon = true,
-            onBackPressed = onBackPressed)
+        topBar = {
+            CustomTopBar(
+                title = stringResource(id = R.string.favorites),
+                showBackIcon = true,
+                onBackPressed = onBackPressed
+            )
         },
-        bottomBar = { CustomBottomBar(navController = navController)})
-    {  innerPadding->
-        Column(modifier = modifier
-            .fillMaxSize()
-            .padding(innerPadding))
+        bottomBar = { CustomBottomBar(navController = navController) })
+    { innerPadding ->
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        )
         {
-            if(favoriteProducts.isNotEmpty()){
-            LazyColumn(
-                modifier = modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
-            ) {
-                items(favoriteProducts){favoriteProduct->
-                    Card(modifier = modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 8.dp)) {
-                        Box {
-                            AsyncImage(
-                                model = favoriteProduct.imageUrl,
-                                contentDescription = null,
-                                modifier = modifier.fillMaxWidth()
-                            )
-                            Icon(
-                                imageVector = Icons.Filled.Star,
-                                contentDescription = null,
-                                tint = Color.Gray,
-                                modifier = modifier
-                                    .padding(4.dp)
-                                    .clickable {
+            if (favoriteProducts.isNotEmpty()) {
+                LazyColumn(
+                    modifier = modifier
+                        .fillMaxSize()
+                        .padding(16.dp)
+                ) {
+                    items(favoriteProducts) { favoriteProduct ->
+                        Card(
+                            modifier = modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 8.dp)
+                        ) {
+                            Box {
+                                AsyncImage(
+                                    model = favoriteProduct.imageUrl,
+                                    contentDescription = null,
+                                    modifier = modifier.fillMaxWidth()
+                                )
+                                Icon(
+                                    imageVector = Icons.Filled.Star,
+                                    contentDescription = null,
+                                    tint = Color.Gray,
+                                    modifier = modifier
+                                        .padding(4.dp)
+                                        .clickable {
+                                            viewModel.removeFromFavorites(favoriteProduct.id)
+                                        }
+                                        .align(Alignment.TopEnd)
+                                        .height(36.dp)
+                                )
+                            }
 
-                                    }
-                                    .align(Alignment.TopEnd)
-                                    .height(36.dp)
-                            )
-                        }
+                            Column(modifier = modifier.padding(8.dp)) {
+                                Text(
+                                    text = favoriteProduct.name,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 18.sp
+                                )
+                                Text(
+                                    text = favoriteProduct.description,
+                                    fontSize = 14.sp,
+                                    modifier = modifier.padding(top = 4.dp)
+                                )
+                                Text(
+                                    text = "${favoriteProduct.price} TL",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 16.sp,
+                                    modifier = modifier.padding(top = 8.dp)
+                                )
+                            }
 
-                        Column(modifier = modifier.padding(8.dp)) {
-                            Text(
-                                text = favoriteProduct.name,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 18.sp
-                            )
-                            Text(
-                                text = favoriteProduct.description,
-                                fontSize = 14.sp,
-                                modifier = modifier.padding(top = 4.dp)
-                            )
-                            Text(
-                                text = "${favoriteProduct.price} TL",
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 16.sp,
-                                modifier = modifier.padding(top = 8.dp)
-                            )
                         }
 
                     }
 
                 }
-
-            }
-        }
-            else{
-                Column( modifier = modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
+            } else {
+                Column(
+                    modifier = modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center) {
+                    verticalArrangement = Arrangement.Center
+                ) {
                     Text(
                         text = stringResource(id = R.string.information),
                         fontWeight = FontWeight.Bold,
@@ -159,21 +159,10 @@ fun FavouritesScreen(
             }
 
 
-
         }
 
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
 }
+
+
