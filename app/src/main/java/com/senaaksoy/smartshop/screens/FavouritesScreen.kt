@@ -56,7 +56,6 @@ fun FavouritesScreen(
     if (productId != null) {
         val selectedProduct = products.find { it.id == productId }
         selectedProduct?.let {
-            // Burada, favoriye ekleme işlemi yapılır
             viewModel.addToFavorites(
                 FavoriteEntity(
                     productId = it.id,

@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -74,7 +73,7 @@ fun HomeScreen(
     var selectedBrand by remember { mutableStateOf<String?>(null) }
     var showBottomSheet by remember { mutableStateOf(false) }
 
-    // Ürün listesi filtreleme
+
     val filteredList = products.filter { product ->
         product.name.contains(searchQuery, ignoreCase = true) &&
                 (selectedBrand == null || product.name.contains(selectedBrand!!, ignoreCase = true))
@@ -150,10 +149,8 @@ fun HomeScreen(
                     ProductCard(
                         product = product,
                         imageUrl = product.imageUrl,
-                        price = product.price,
                         navController = navController,
-                        productid = product.id,
-                        homeViewModel = homeViewModel
+                        productid = product.id
                     )
                 }
             }
@@ -167,26 +164,22 @@ fun HomeScreen(
                 selectedBrand = brand
                 showBottomSheet = false
             },
-            products = products ,// Burada markaları anasayfada görünen ürünlerden alıyoruz
+            products = products ,
             onCancel = {showBottomSheet=false}
         )
     }
 }
 
-
-
-
 @Composable
 fun BottomSheetFilter(
     onApplyFilters: (PriceSort?, String?) -> Unit,
     products: List<ProductEntity>,
-    onCancel: () -> Unit//
+    onCancel: () -> Unit
 ) {
     var selectedPriceSort by remember { mutableStateOf<PriceSort?>(null) }
     var selectedBrand by remember { mutableStateOf<String?>(null) }
 
-    // Ürünlerden markaları al
-    val brands = products.map { it.name }.distinct() // Burada markaları ürün listesinden alıyoruz
+    val brands = products.map { it.name }.distinct()
 
     Column(
         modifier = Modifier
@@ -267,9 +260,8 @@ fun ProductCard(modifier: Modifier = Modifier,
                 product: ProductEntity,
                 productid :Int,
                 navController: NavController,
-                imageUrl:String,
-                price:Double,
-                homeViewModel: HomeViewModel) {
+                imageUrl:String
+                ) {
     Surface(
         modifier = modifier
             .shadow(elevation = 2.dp)
@@ -337,11 +329,7 @@ fun ProductCard(modifier: Modifier = Modifier,
             }
         }
 
-
     }
-
-
-
 }
 
 enum class PriceSort {

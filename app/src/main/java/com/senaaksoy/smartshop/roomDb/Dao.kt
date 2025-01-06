@@ -26,7 +26,6 @@ interface CartDao {
     @Query("SELECT * FROM cart")
     fun getCartItems(): LiveData<List<CartEntity>>
 
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(cartItem: CartEntity)
 

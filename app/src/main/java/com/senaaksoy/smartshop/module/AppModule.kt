@@ -23,7 +23,6 @@ object AppModule {
     fun provideDatabase(@ApplicationContext context: Context): AppDatabase {
         return Room.databaseBuilder(context, AppDatabase::class.java, "smart_shop_db").build()
     }
-
     @Provides
     fun provideProductDao(db: AppDatabase): ProductDao = db.productDao()
 

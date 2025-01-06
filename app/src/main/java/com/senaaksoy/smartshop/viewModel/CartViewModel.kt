@@ -11,14 +11,13 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class CartViewModel @Inject constructor(
-    private val cartRepository: CartRepository
-) : ViewModel() {
+class CartViewModel @Inject constructor(private val cartRepository: CartRepository) : ViewModel() {
     val cartItems = cartRepository.cartItems
 
     val totalPrice: LiveData<Double> = cartRepository.cartItems.map { cartItems ->
         cartItems.sumOf { it.price * it.quantity }
     }
+
     fun addToCart(cartEntity: CartEntity) {
         viewModelScope.launch {
 
@@ -31,15 +30,10 @@ class CartViewModel @Inject constructor(
         }
     }
 
-
-
-
-
-
     fun updateQuantity(id: Int, newQuantity: Int) {
         viewModelScope.launch {
             if (newQuantity <= 0) {
-               cartRepository.removeFromCart(id)
+                cartRepository.removeFromCart(id)
             } else {
                 cartRepository.updateQuantity(id, newQuantity)
             }

@@ -57,7 +57,14 @@ fun CartScreen(
             val selectedProduct = products.find { it.id == id }
             selectedProduct?.let {
                 if (cartItems.none { it.id == selectedProduct.id }) {
-                    viewModel.addToCart(CartEntity(id = it.id, name = it.name, quantity = 1, price = it.price))
+                    viewModel.addToCart(
+                        CartEntity(
+                            id = it.id,
+                            name = it.name,
+                            quantity = 1,
+                            price = it.price
+                        )
+                    )
                 }
             }
         }
@@ -67,7 +74,7 @@ fun CartScreen(
         topBar = {
             CustomTopBar(title = stringResource(id = R.string.e_market),
                 showBackIcon = true,
-                onBackPressed = {onBackPressed()}
+                onBackPressed = { onBackPressed() }
             )
         },
         bottomBar = { CustomBottomBar(navController = navController) }
@@ -86,13 +93,14 @@ fun CartScreen(
                         onIncrease = {
                             viewModel.updateQuantity(
                                 cartItem.id,
-                                cartItem.quantity +1
+                                cartItem.quantity + 1
                             )
                         },
-                        onDecrease = {viewModel.updateQuantity(
-                            cartItem.id,
-                            cartItem.quantity - 1
-                        )
+                        onDecrease = {
+                            viewModel.updateQuantity(
+                                cartItem.id,
+                                cartItem.quantity - 1
+                            )
                         }
                     )
 
@@ -144,7 +152,7 @@ fun CartScreen(
 }
 
 @Composable
-fun CartItem(productName: String, quantity: Int, onIncrease: () -> Unit,onDecrease: ()->Unit) {
+fun CartItem(productName: String, quantity: Int, onIncrease: () -> Unit, onDecrease: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -158,7 +166,7 @@ fun CartItem(productName: String, quantity: Int, onIncrease: () -> Unit,onDecrea
         Spacer(modifier = Modifier.weight(1f))
         IconButton(
             modifier = Modifier.background(Color(0x0F535252)),
-            onClick = {onDecrease() }) {
+            onClick = { onDecrease() }) {
             Icon(painter = painterResource(id = R.drawable.delete), contentDescription = null)
         }
         Text(

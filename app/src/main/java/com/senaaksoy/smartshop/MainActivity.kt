@@ -9,7 +9,7 @@ import com.senaaksoy.smartshop.screens.HomeScreen
 import com.senaaksoy.smartshop.ui.theme.SmartShopTheme
 import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint // Hilt'in bu Activity'ye bağımlılıkları enjekte etmesini sağlar
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
 
